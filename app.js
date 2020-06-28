@@ -23,6 +23,7 @@ const campgroundSchema = new mongoose.Schema({
     description: String
 });
 
+// Compile schema to model
 const Campground = mongoose.model("campground", campgroundSchema);
 
 app.get('/', (req, res)=> {
