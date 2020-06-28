@@ -1,8 +1,10 @@
-const express = require('express')
-const path = require('path')
-const bodyParser = require('body-parser')
+const   express     = require('express'),
+        path        = require('path'),
+        bodyParser  = require('body-parser'),
+        mongoose    = require('mongoose')
 
 const app = express()
+mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
 
 // Define paths
 const publicDir = path.join(__dirname, './public')
@@ -14,38 +16,63 @@ app.set('views', viewsPath);
 app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({extended: true}) );
 
-var campgrounds = [
-    {name : "portsalon",   image: "https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "dunfanaghey", image: "https://images.pexels.com/photos/1061640/pexels-photo-1061640.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "rathmulan",   image: "https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "portsalon",   image: "https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "dunfanaghey", image: "https://images.pexels.com/photos/1061640/pexels-photo-1061640.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "rathmulan",   image: "https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "portsalon",   image: "https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "dunfanaghey", image: "https://images.pexels.com/photos/1061640/pexels-photo-1061640.jpeg?auto=compress&cs=tinysrgb&h=350"},
-    {name : "rathmulan",   image: "https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?auto=compress&cs=tinysrgb&h=350"}
-];
+// SCHEMA setup
+const campgroundSchema = new mongoose.Schema({
+    name: String,
+    image: String,
+    description: String
+});
+
+const Campground = mongoose.model("campground", campgroundSchema);
 
 app.get('/', (req, res)=> {
     res.render('landing');
 });
 
+// INDEX - show all campgrounds
 app.get("/campgrounds", (req, res)=> {
-    res.render('campgrounds', {campgrounds: campgrounds} );
+    Campground.find({}, (err, allCampgrounds)=> {
+        if(err) {
+            console.log("Error fetching campgrounds");
+        } else {
+            res.render('index', {campgrounds: allCampgrounds} );
+        }        
+    });
 });
 
+// CRETE - add a new campground
 app.post("/campgrounds", (req, res)=> {
     let name = req.body.name;
     let image = req.body.image;
-    let newCampground = {name, image};
-    campgrounds.push( newCampground);
-    res.redirect("/campgrounds");
+    let description = req.body.description;
+    let newCampground = {name, image, description};
+    Campground.create(newCampground, (err, camp)=> {
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect("/campgrounds");
+        }
+    });    
 });
 
+// NEW - show form to create new campground
 app.get("/campgrounds/new", (req, res) => {
     res.render('new');
 });
 
-app.listen(3000, ()=> {
+// SHOW - show details of a campground
+app.get("/campgrounds/:id", (req, res)=> {
+    console.log(req.params.id);
+    Campground.findById(req.params.id, (err, foundCampground)=> {
+        if(err) {
+            console.log(err);
+        } else {
+            console.log(foundCampground);
+            res.render("show", {campground: foundCampground});
+        }
+    });    
+});
+
+app.listen(process.env.PORT, ()=> {
     console.log("listening on port 3000!");
 });
