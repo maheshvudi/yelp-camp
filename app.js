@@ -1,7 +1,8 @@
 const   express     = require('express'),
         path        = require('path'),
         bodyParser  = require('body-parser'),
-        mongoose    = require('mongoose')
+        mongoose    = require('mongoose'),
+        Campground = require('./models/campground')
 
 const app = express()
 mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -16,16 +17,7 @@ app.set('views', viewsPath);
 app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({extended: true}) );
 
-// SCHEMA setup
-const campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-// Compile schema to model
-const Campground = mongoose.model("campground", campgroundSchema);
-
+// INDEX 
 app.get('/', (req, res)=> {
     res.render('landing');
 });
