@@ -2,7 +2,8 @@ const   express     = require('express'),
         path        = require('path'),
         bodyParser  = require('body-parser'),
         mongoose    = require('mongoose'),
-        Campground = require('./models/campground')
+        Campground  = require('./models/campground'),
+        seedDB      = require('./seeds')
 
 const app = express()
 mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -16,6 +17,9 @@ app.set('views', viewsPath);
 
 app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({extended: true}) );
+
+// seed DB
+seedDB();
 
 // INDEX 
 app.get('/', (req, res)=> {
@@ -33,7 +37,7 @@ app.get("/campgrounds", (req, res)=> {
     });
 });
 
-// CRETE - add a new campground
+// CREATE - add a new campground
 app.post("/campgrounds", (req, res)=> {
     let name = req.body.name;
     let image = req.body.image;
@@ -56,7 +60,7 @@ app.get("/campgrounds/new", (req, res) => {
 // SHOW - show details of a campground
 app.get("/campgrounds/:id", (req, res)=> {
     console.log(req.params.id);
-    Campground.findById(req.params.id, (err, foundCampground)=> {
+    Campground.findById(req.params.id).populate("comments").exec( (err, foundCampground)=> {
         if(err) {
             console.log(err);
         } else {
