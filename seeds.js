@@ -1,6 +1,6 @@
-const mongoose = require('mongoose'),
-    Campground = require('./models/campground'),
-    Comment    = require('./models/Comment')
+const   mongoose = require('mongoose'),
+        Comment    = require('./models/comment'),
+        Campground = require('./models/campground')
 
 var data = [
     { name: "Errigal base", image: "https://images.pexels.com/photos/1840421/pexels-photo-1840421.jpeg?auto=compress&cs=tinysrgb&h=350", description: "Nice mountain foot, no toilets or drinking water" },

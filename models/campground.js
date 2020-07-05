@@ -8,12 +8,10 @@ const campgroundSchema = new mongoose.Schema({
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Comment"
+            ref: "comment"
         } 
     ]
 });
 
 // Compile schema to model
-const Campground = mongoose.model("campground", campgroundSchema);
-
-module.exports = Campground;
+module.exports = mongoose.model("campground", campgroundSchema);
