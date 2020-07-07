@@ -3,7 +3,13 @@ const mongoose    = require('mongoose')
 // SCHEMA setup
 const commentSchema = mongoose.Schema({
     text: String,
-    author: String
+    author: {
+        id: { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user"
+        },
+        username: String
+    }
 });
 
 // Compile schema to model

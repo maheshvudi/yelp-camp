@@ -8,7 +8,7 @@ const campgroundSchema = new mongoose.Schema({
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "comment"
+            ref: "comment" // refferts to the model that we refer with this ObjectId
         } 
     ]
 });

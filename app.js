@@ -28,7 +28,7 @@ app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({extended: true}) );
 
 // seed DB
-seedDB();
+// seedDB();
 
 // PASSPORT CONFIG
 app.use(require('express-session')({

@@ -2,6 +2,14 @@ const expres = require('express')
 const router = expres.Router();
 const Campground    = require('../models/campground')
 
+// middleware checks user login
+const  isLoggedIn = (req, res, next)=> {
+    if(req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/login");
+}
+
 // INDEX - show all campgrounds
 router.get("/", (req, res)=> {
     Campground.find({}, (err, allCampgrounds)=> {
@@ -14,7 +22,7 @@ router.get("/", (req, res)=> {
 });
 
 // CREATE - add a new campground
-router.post("/", (req, res)=> {
+router.post("/", isLoggedIn, (req, res)=> {
     let name = req.body.name;
     let image = req.body.image;
     let description = req.body.description;
@@ -29,7 +37,7 @@ router.post("/", (req, res)=> {
 });
 
 // NEW - show form to create new campground
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
 });
 
