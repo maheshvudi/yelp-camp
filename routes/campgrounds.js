@@ -11,6 +11,28 @@ const  isLoggedIn = (req, res, next)=> {
     res.redirect("/login");
 }
 
+const checkCampgroundOwnership = (req, res, next)=> {
+    if(req.isAuthenticated()) {
+        Campground.findById(req.params.id, (err, foundCampground)=> {
+            if(err) {
+                console.log(err)
+                res.redirect("/campgrounds");
+            } else {
+                // does user own the campground
+                // since the record found is a objectid vs user info is a string use equals method from mongoose
+                if(foundCampground.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect("back");
+                }
+            }
+        });    
+    } else {
+        // take user back to where the came from
+        res.redirect("back");
+    }
+}
+
 // INDEX - show all campgrounds
 router.get("/", (req, res)=> {
     Campground.find({}, (err, allCampgrounds)=> {
@@ -57,19 +79,18 @@ router.get("/:id", (req, res)=> {
 });
 
 // EDIT - campground
-router.get("/:id/edit", (req, res)=> {
+router.get("/:id/edit", checkCampgroundOwnership, (req, res)=> {
     Campground.findById(req.params.id, (err, foundCampground)=> {
         if(err) {
             console.log(err)
-            res.redirect("/campgrounds");
         } else {
             res.render("campgrounds/edit", {campground: foundCampground});
         }
-    });
+    });    
 });
 
 // UPDATE - campground
-router.put("/:id", (req, res)=> {
+router.put("/:id", checkCampgroundOwnership, (req, res)=> {
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground)=> {
         if(err) {
             console.log(err)
@@ -81,7 +102,7 @@ router.put("/:id", (req, res)=> {
 });
 
 // DESTROY - campground
-router.delete("/:id", (req, res)=> {
+router.delete("/:id", checkCampgroundOwnership, (req, res)=> {
     Campground.findByIdAndRemove(req.params.id, (err)=> {
         if(err) {
             console.log(err)
