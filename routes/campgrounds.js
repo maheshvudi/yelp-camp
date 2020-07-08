@@ -1,6 +1,7 @@
 const expres = require('express')
 const router = expres.Router();
-const Campground    = require('../models/campground')
+const Campground    = require('../models/campground');
+const campground = require('../models/campground');
 
 // middleware checks user login
 const  isLoggedIn = (req, res, next)=> {
@@ -54,5 +55,41 @@ router.get("/:id", (req, res)=> {
         }
     });    
 });
+
+// EDIT - campground
+router.get("/:id/edit", (req, res)=> {
+    Campground.findById(req.params.id, (err, foundCampground)=> {
+        if(err) {
+            console.log(err)
+            res.redirect("/campgrounds");
+        } else {
+            res.render("campgrounds/edit", {campground: foundCampground});
+        }
+    });
+});
+
+// UPDATE - campground
+router.put("/:id", (req, res)=> {
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground)=> {
+        if(err) {
+            console.log(err)
+            res.redirect("/campgrounds");
+        } else {
+            res.redirect("/campgrounds/" + req.params.id);
+        }
+    });
+});
+
+// DESTROY - campground
+router.delete("/:id", (req, res)=> {
+    Campground.findByIdAndRemove(req.params.id, (err)=> {
+        if(err) {
+            console.log(err)
+            res.redirect("/campgrounds");
+        } else {
+            res.redirect("/campgrounds");
+        }
+    });
+})
 
 module.exports = router;

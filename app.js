@@ -5,6 +5,7 @@ const   express     = require('express'),
         passport                = require('passport'),
         LocalStrategy           = require('passport-local'),
         passportLocalMongoose   = require('passport-local-mongoose'),
+        methodOverride          = require('method-override'),
         User                    = require('./models/user'),
         Comment     = require('./models/comment'),
         Campground  = require('./models/campground'),
@@ -26,6 +27,8 @@ app.set('views', viewsPath);
 
 app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({extended: true}) );
+// configure method override with the parameter to look for, to support PUT, DELETE etc through post request
+app.use(methodOverride("_method"));
 
 // seed DB
 // seedDB();
