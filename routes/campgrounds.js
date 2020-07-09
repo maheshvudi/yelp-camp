@@ -1,7 +1,7 @@
 const expres = require('express')
 const router = expres.Router();
 const Campground = require('../models/campground');
-const campground = require('../models/campground');
+const Comment = require('../models/comment');
 const middleware = require('../middleware');
 
 // INDEX - show all campgrounds
@@ -74,11 +74,31 @@ router.put("/:id", middleware.checkCampgroundOwnership, (req, res)=> {
 
 // DESTROY - campground
 router.delete("/:id", middleware.checkCampgroundOwnership, (req, res)=> {
-    Campground.findByIdAndRemove(req.params.id, (err)=> {
+    Campground.findById(req.params.id, (err, foundCampground)=> {
         if(err) {
             console.log(err)
             res.redirect("/campgrounds");
         } else {
+            // get the comment ids for this campground
+            const ids = [];
+            foundCampground.comments.forEach(comment => {
+                ids.push(comment._id);
+            });
+            console.log("total comments to be deleted "+ ids.length);
+            // delete all the comments
+            Comment.deleteMany({
+                _id: {$in: ids}
+            }).then( ()=> {
+                console.log("comments delted")
+            }).catch( (err)=> {
+                console.log(err);
+            });
+            // delete the campground
+            foundCampground.remove().then( ()=> {
+                console.log("campground delted")
+            }).catch( (err)=> {
+                console.log(err);
+            });
             res.redirect("/campgrounds");
         }
     });

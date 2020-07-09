@@ -16,7 +16,7 @@ const   campgroundRoutes = require('./routes/campgrounds'),
         indexRoutes      = require('./routes/index')
 
 const app = express()
-mongoose.connect("mongodb://127.0.0.1:27017/yelp_camp", {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
+mongoose.connect("mongodb://127.0.0.1:27017/yelp_camp", {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
 // Define paths
 const publicDir = path.join(__dirname, './public')
