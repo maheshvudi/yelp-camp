@@ -2,6 +2,7 @@ const   express     = require('express'),
         path        = require('path'),
         bodyParser  = require('body-parser'),
         mongoose    = require('mongoose'),
+        flash       = require('connect-flash'),
         passport                = require('passport'),
         LocalStrategy           = require('passport-local'),
         passportLocalMongoose   = require('passport-local-mongoose'),
@@ -29,6 +30,8 @@ app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({extended: true}) );
 // configure method override with the parameter to look for, to support PUT, DELETE etc through post request
 app.use(methodOverride("_method"));
+// use connect flash for flash messages
+app.use(flash());
 
 // seed DB
 // seedDB();
@@ -50,6 +53,9 @@ passport.deserializeUser( User.deserializeUser());
 app.use( (req, res, next)=> {
     // request.user information is populated by passport
     res.locals.currentUser = req.user;
+    // set the message available for every request to handle flash messages
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
     // let the control go to next item in flow
     next();
 });
