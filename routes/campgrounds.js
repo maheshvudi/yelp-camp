@@ -18,10 +18,11 @@ router.get("/", (req, res)=> {
 // CREATE - add a new campground
 router.post("/", middleware.isLoggedIn, (req, res)=> {
     let name = req.body.name;
+    let price = req.body.price;
     let image = req.body.image;
     let description = req.body.description;
     let author = {id: req.user._id, username: req.user.username};
-    let newCampground = {name, image, description, author};
+    let newCampground = {name, price, image, description, author};
     Campground.create(newCampground, (err, camp)=> {
         if(err) {
             req.flash("error", "Unable to create Campground");
