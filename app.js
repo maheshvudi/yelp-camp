@@ -17,7 +17,7 @@ const   campgroundRoutes = require('./routes/campgrounds'),
         indexRoutes      = require('./routes/index')
 
 const app = express()
-mongoose.connect("mongodb://127.0.0.1:27017/yelp_camp", {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
+mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false});
 
 // Define paths
 const publicDir = path.join(__dirname, './public')
@@ -65,6 +65,6 @@ app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-app.listen(3000, ()=> {
-    console.log("listening on port 3000!");
+app.listen(process.env.PORT, ()=> {
+    console.log("YelpCamp app started..!!");
 });
